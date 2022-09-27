@@ -1,7 +1,11 @@
 import "./App.css";
 import Button from "@mui/material/Button";
+import SimpleDialog from "@mui/material/Dialog";
+import TextField from "@mui/material/TextField";
 import {
+  Box,
   Paper,
+  Stack,
   Table,
   TableBody,
   TableCell,
@@ -11,6 +15,7 @@ import {
 } from "@mui/material";
 import { userPoolClient } from "./libs/clients/UserPoolClient";
 import { InitiateAuthCommand } from "@aws-sdk/client-cognito-identity-provider";
+import LoginDialogComponent from "./components/LoginDialogComponent";
 
 const signInUser = async () => {
   const response = await userPoolClient.send(
@@ -99,6 +104,7 @@ function App() {
           </Table>
         </TableContainer>
       </body>
+      <LoginDialogComponent />
     </div>
   );
 }
