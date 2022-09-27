@@ -1,5 +1,5 @@
 import { InitiateAuthCommand } from "@aws-sdk/client-cognito-identity-provider";
-import { Box, Stack } from "@mui/material";
+import { Alert, Box, Snackbar, Stack } from "@mui/material";
 import Button from "@mui/material/Button";
 import SimpleDialog from "@mui/material/Dialog";
 import TextField from "@mui/material/TextField";
@@ -9,11 +9,15 @@ import React, { useState } from "react";
 const TEST_USERNAME = "thisusernamesucks";
 const TEST_PASSWORD = "password";
 
-type LoginDialogComponentProps = {};
+type LoginDialogComponentProps = {
+  setShowLoginDialog: React.Dispatch<React.SetStateAction<boolean>>;
+};
 
 function LoginDialogComponent(props: LoginDialogComponentProps) {
   const [enteredUsername, setEnteredUsername] = useState("");
   const [enteredPassword, setEnteredPassword] = useState("");
+  const [showNotAuthenticatedAlert, setShowNotAuthenticatedAlert] =
+    useState(false);
 
   const signInUser = async (username: string, password: string) => {
     try {
@@ -27,10 +31,11 @@ function LoginDialogComponent(props: LoginDialogComponentProps) {
           },
         })
       );
-      console.log(`Signed in: ${response.AuthenticationResult?.IdToken!!}`);
+      props.setShowLoginDialog(false);
       // set authentication boolean to true to get rid of the login dialog box
     } catch (error) {
       // show error alert
+      setShowNotAuthenticatedAlert(true);
     }
   };
 
@@ -41,11 +46,12 @@ function LoginDialogComponent(props: LoginDialogComponentProps) {
         <Box margin={5}>
           <Stack direction="column" spacing={2}>
             <TextField
-              label={"Username"}
+              label="Username"
               onChange={(event) => setEnteredUsername(event.target.value)}
             />
             <TextField
-              label={"password"}
+              label="Password"
+              type="password"
               onChange={(event) => setEnteredPassword(event.target.value)}
             />
             <Stack>
@@ -55,6 +61,16 @@ function LoginDialogComponent(props: LoginDialogComponentProps) {
               >
                 Sign In
               </Button>
+              <Snackbar
+                open={showNotAuthenticatedAlert}
+                onClose={() => setShowNotAuthenticatedAlert(false)}
+                anchorOrigin={{ horizontal: "center", vertical: "bottom" }}
+                autoHideDuration={5000}
+              >
+                <Alert severity="error" sx={{ width: "100%" }}>
+                  Username or Password was incorrect.
+                </Alert>
+              </Snackbar>
             </Stack>
           </Stack>
         </Box>
