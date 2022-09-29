@@ -11,6 +11,8 @@ const TEST_PASSWORD = "password";
 
 type LoginDialogComponentProps = {
   setShowLoginDialog: React.Dispatch<React.SetStateAction<boolean>>;
+  setTokensExpirationDate: React.Dispatch<React.SetStateAction<Date>>;
+  setRefreshTokenExpirationDate: React.Dispatch<React.SetStateAction<Date>>;
 };
 
 function LoginDialogComponent(props: LoginDialogComponentProps) {
@@ -32,7 +34,36 @@ function LoginDialogComponent(props: LoginDialogComponentProps) {
         })
       );
       props.setShowLoginDialog(false);
-      // set authentication boolean to true to get rid of the login dialog box
+
+      // update credentials in local storage
+      localStorage.setItem(
+        "refreshToken",
+        response.AuthenticationResult?.RefreshToken!!
+      );
+      localStorage.setItem("idToken", response.AuthenticationResult?.IdToken!!);
+      localStorage.setItem(
+        "accessToken",
+        response.AuthenticationResult?.AccessToken!!
+      );
+      localStorage.setItem(
+        "refreshTokenExpireEpoch",
+        (Date.now() + 60 * 60 * 1000).toString()
+      );
+      localStorage.setItem(
+        "tokenExpireEpoch",
+        (
+          Date.now() +
+          response.AuthenticationResult?.ExpiresIn!! * 1000
+        ).toString()
+      );
+      localStorage.setItem("username", username);
+
+      props.setTokensExpirationDate(
+        new Date(Date.now() + response.AuthenticationResult?.ExpiresIn!! * 1000)
+      );
+      props.setRefreshTokenExpirationDate(
+        new Date(Date.now() + 60 * 60 * 1000)
+      );
     } catch (error) {
       // show error alert
       setShowNotAuthenticatedAlert(true);
