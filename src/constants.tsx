@@ -2,28 +2,23 @@ import { GridColDef } from "@mui/x-data-grid";
 
 export const COLUMN_DEFINITIONS: GridColDef[] = [
   {
-    field: "workoutType",
-    headerName: "Workout Type",
-    width: 100,
+    field: "exercise",
+    headerName: "Exercise",
+    flex: 300,
   },
   {
-    field: "exercises",
-    headerName: "Exercises",
-    width: 100,
+    field: "reps",
+    headerName: "Reps",
+    width: 60,
   },
   {
-    field: "exercisesDetails",
-    headerName: "Details",
-    width: 100,
+    field: "sets",
+    headerName: "Sets",
+    width: 60,
   },
   {
-    field: "date",
-    headerName: "Date",
-    width: 100,
-  },
-  {
-    field: "notes",
-    headerName: "Notes",
-    width: 100,
+    field: "weight",
+    headerName: "Weight",
+    width: 60,
   },
 ];

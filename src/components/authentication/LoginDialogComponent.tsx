@@ -3,7 +3,7 @@ import { Alert, Box, Snackbar, Stack } from "@mui/material";
 import Button from "@mui/material/Button";
 import SimpleDialog from "@mui/material/Dialog";
 import TextField from "@mui/material/TextField";
-import { userPoolClient } from "../libs/clients/UserPoolClient";
+import { userPoolClient } from "../../libs/clients/UserPoolClient";
 import React, { useState } from "react";
 
 const TEST_USERNAME = "thisusernamesucks";

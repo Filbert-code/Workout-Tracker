@@ -7,7 +7,7 @@ import {
   Toolbar,
   Typography,
 } from "@mui/material";
-import { userPoolClient } from "../libs/clients/UserPoolClient";
+import { userPoolClient } from "../../libs/clients/UserPoolClient";
 
 function TopNavigationComponent() {
   const signOutUser = async () => {

@@ -1,5 +1,5 @@
 import { InitiateAuthCommand } from "@aws-sdk/client-cognito-identity-provider";
-import { userPoolClient } from "./UserPoolClient";
+import { userPoolClient } from "./clients/UserPoolClient";
 
 export const refreshTokens = async () => {
   const refreshToken = localStorage.getItem("refreshToken");
