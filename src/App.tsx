@@ -24,6 +24,7 @@ function App() {
   const [refreshTokenExpirationDate, setRefreshTokenExpirationDate] = useState(
     new Date(parseInt(localStorage.getItem("refreshTokenExpireEpoch")!!))
   );
+  const [triggerFetchWorkouts, setTriggerFetchWorkouts] = useState(false);
 
   useEffect(() => {
     const tokenExpireEpoch = parseInt(
@@ -69,6 +70,8 @@ function App() {
           </Button>
         </Stack>
         <WorkoutScheduleComponent
+          triggerFetchWorkouts={triggerFetchWorkouts}
+          setTriggerFetchWorkouts={setTriggerFetchWorkouts}
           showWorkoutFormDialog={showWorkoutFormDialog}
           setShowWorkoutFormDialog={setShowWorkoutFormDialog}
         />
@@ -81,6 +84,8 @@ function App() {
         )}
         {showWorkoutFormDialog && (
           <PostWorkoutFormComponent
+            setTriggerFetchWorkouts={setTriggerFetchWorkouts}
+            isUpdating={false}
             workout={EMPTY_WORKOUT}
             showPostWorkoutForm={showWorkoutFormDialog}
             setShowPostWorkoutForm={setShowWorkoutFormDialog}

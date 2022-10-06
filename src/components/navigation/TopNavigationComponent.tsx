@@ -12,12 +12,10 @@ import { userPoolClient } from "../../libs/clients/UserPoolClient";
 function TopNavigationComponent() {
   const signOutUser = async () => {
     const access_token = localStorage.getItem("accessToken")!!;
-    console.log(`Access token: ${access_token}`);
     const response = await userPoolClient.send(
       new GlobalSignOutCommand({ AccessToken: access_token })
     );
     await response.$metadata.httpStatusCode;
-    console.log(`Response: ${await response}`);
   };
 
   return (
