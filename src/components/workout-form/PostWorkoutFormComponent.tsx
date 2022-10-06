@@ -100,7 +100,7 @@ function PostWorkoutFormComponent(props: PostWorkoutFormComponentProps) {
   const updateWorkout = async () => {
     const workoutObj: PostWorkoutObject = {
       username: localStorage.getItem("username")!!,
-      timestamp: moment(parseInt(timestamp)).valueOf().toString(),
+      timestamp: timestamp,
       workoutType: workoutType,
       totalTime: totalTime,
       exercises: workoutCards
@@ -141,7 +141,7 @@ function PostWorkoutFormComponent(props: PostWorkoutFormComponentProps) {
   const postWorkout = async () => {
     const workoutObj: PostWorkoutObject = {
       username: localStorage.getItem("username")!!,
-      timestamp: moment(parseInt(timestamp)).unix().toString(),
+      timestamp: timestamp,
       workoutType: workoutType,
       totalTime: totalTime,
       exercises: workoutCards
@@ -182,6 +182,10 @@ function PostWorkoutFormComponent(props: PostWorkoutFormComponentProps) {
     setTimestamp(newDateTime?.valueOf().toString()!!);
   };
 
+  useEffect(() => {
+    console.log(`timestamp: ${timestamp}`);
+  });
+
   return (
     <SimpleDialog
       open={true}
@@ -193,7 +197,9 @@ function PostWorkoutFormComponent(props: PostWorkoutFormComponentProps) {
                 disabled={props.isUpdating}
                 label="Date & Time"
                 value={
-                  timestamp.length > 0 ? moment(parseInt(timestamp)) : moment()
+                  timestamp.length > 0
+                    ? moment.unix(parseInt(timestamp))
+                    : moment()
                 }
                 onChange={handleDateTimeChange}
                 renderInput={(params) => <TextField {...params} />}

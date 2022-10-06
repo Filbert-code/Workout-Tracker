@@ -38,11 +38,12 @@ function WorkoutScheduleCardComponent(
   const { dayOfTheWeek, date, workout } = props.workoutCardData;
   const [isUpdating, setIsUpdating] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [isPosting, setIsPosting] = useState(false);
 
   const deleteWorkout = async () => {
     const workoutObj = {
       username: localStorage.getItem("username")!!,
-      timestamp: moment(parseInt(workout?.timestamp!!)).valueOf().toString(),
+      timestamp: workout?.timestamp,
     };
     const endpoint =
       "https://lgm3h1q06a.execute-api.us-west-2.amazonaws.com/dev";
@@ -166,7 +167,11 @@ function WorkoutScheduleCardComponent(
               paddingBottom: 1,
             }}
           >
-            <Fab>
+            <Fab
+              onClick={() => {
+                setIsPosting(true);
+              }}
+            >
               <AddIcon />
             </Fab>
           </Box>
@@ -178,6 +183,27 @@ function WorkoutScheduleCardComponent(
               workout={workout != null ? workout : EMPTY_WORKOUT}
               showPostWorkoutForm={isUpdating}
               setShowPostWorkoutForm={setIsUpdating}
+              setTriggerFetchWorkouts={props.setTriggerFetchWorkouts}
+            />
+          )}
+          {isPosting && (
+            <PostWorkoutFormComponent
+              isUpdating={false}
+              workout={
+                workout != null
+                  ? workout
+                  : {
+                      timestamp: date.unix().toString(),
+                      workoutType: "",
+                      totalTime: "",
+                      exercises: [],
+                      exercisesDetails: [],
+                      notes: "",
+                      id: "",
+                    }
+              }
+              showPostWorkoutForm={isPosting}
+              setShowPostWorkoutForm={setIsPosting}
               setTriggerFetchWorkouts={props.setTriggerFetchWorkouts}
             />
           )}

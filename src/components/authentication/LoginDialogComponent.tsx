@@ -6,13 +6,11 @@ import TextField from "@mui/material/TextField";
 import { userPoolClient } from "../../libs/clients/UserPoolClient";
 import React, { useState } from "react";
 
-const TEST_USERNAME = "thisusernamesucks";
-const TEST_PASSWORD = "password";
-
 type LoginDialogComponentProps = {
   setShowLoginDialog: React.Dispatch<React.SetStateAction<boolean>>;
   setTokensExpirationDate: React.Dispatch<React.SetStateAction<Date>>;
   setRefreshTokenExpirationDate: React.Dispatch<React.SetStateAction<Date>>;
+  setTriggerFetchWorkouts: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 function LoginDialogComponent(props: LoginDialogComponentProps) {
@@ -64,6 +62,7 @@ function LoginDialogComponent(props: LoginDialogComponentProps) {
       props.setRefreshTokenExpirationDate(
         new Date(Date.now() + 60 * 60 * 1000)
       );
+      props.setTriggerFetchWorkouts(true);
     } catch (error) {
       // show error alert
       setShowNotAuthenticatedAlert(true);
@@ -85,24 +84,22 @@ function LoginDialogComponent(props: LoginDialogComponentProps) {
               type="password"
               onChange={(event) => setEnteredPassword(event.target.value)}
             />
-            <Stack>
-              <Button
-                variant="contained"
-                onClick={() => signInUser(enteredUsername, enteredPassword)}
-              >
-                Sign In
-              </Button>
-              <Snackbar
-                open={showNotAuthenticatedAlert}
-                onClose={() => setShowNotAuthenticatedAlert(false)}
-                anchorOrigin={{ horizontal: "center", vertical: "bottom" }}
-                autoHideDuration={5000}
-              >
-                <Alert severity="error" sx={{ width: "100%" }}>
-                  Username or Password was incorrect.
-                </Alert>
-              </Snackbar>
-            </Stack>
+            <Button
+              variant="contained"
+              onClick={() => signInUser(enteredUsername, enteredPassword)}
+            >
+              Sign In
+            </Button>
+            <Snackbar
+              open={showNotAuthenticatedAlert}
+              onClose={() => setShowNotAuthenticatedAlert(false)}
+              anchorOrigin={{ horizontal: "center", vertical: "bottom" }}
+              autoHideDuration={5000}
+            >
+              <Alert severity="error" sx={{ width: "100%" }}>
+                Username or Password was incorrect.
+              </Alert>
+            </Snackbar>
           </Stack>
         </Box>
       }

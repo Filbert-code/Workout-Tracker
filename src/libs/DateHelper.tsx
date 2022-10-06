@@ -17,10 +17,10 @@ export const getDatesForTheWeek = (givenDate: Moment) => {
 
 export const getTimestampStartEnd = (relativeDate: Moment) => {
   const thisWeekDates = getDatesForTheWeek(relativeDate);
-  const start = thisWeekDates[0].startOf("day").valueOf().toString();
+  const start = thisWeekDates[0].startOf("day").unix().toString();
   const end = thisWeekDates[thisWeekDates.length - 1]
     .endOf("day")
-    .valueOf()
+    .unix()
     .toString();
   return {
     start: start,

@@ -80,6 +80,7 @@ function App() {
             setShowLoginDialog={setShowLoginFormDialog}
             setTokensExpirationDate={setTokensExpirationDate}
             setRefreshTokenExpirationDate={setRefreshTokenExpirationDate}
+            setTriggerFetchWorkouts={setTriggerFetchWorkouts}
           />
         )}
         {showWorkoutFormDialog && (
