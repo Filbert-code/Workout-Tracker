@@ -63,10 +63,10 @@ function WorkoutScheduleComponent(props: WorkoutScheduleComponentProps) {
       "https://lgm3h1q06a.execute-api.us-west-2.amazonaws.com/dev";
     const route = "/workouts";
 
-    const limit = 14;
+    const limit = 7;
     const timestamps = getTimestampStartEnd(relativeDate);
     const username = localStorage.getItem("username");
-    const params = `?username=${username}?Limit=${limit}?startDate=${timestamps.start}?endDate=${timestamps.end}`;
+    const params = `?username=${username}&Limit=${limit}&startDate=${timestamps.start}&endDate=${timestamps.end}`;
 
     try {
       const response = await fetch(endpoint + route + params, {

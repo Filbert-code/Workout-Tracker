@@ -57,6 +57,13 @@ function PostWorkoutFormComponent(props: PostWorkoutFormComponentProps) {
   const [timestamp, setTimestamp] = useState(workout.timestamp);
   const [cardCount, setCardCount] = useState(workout.exercises.length);
 
+  useEffect(() => {
+    if (timestamp.length == 0) {
+      console.log("updated Timestamp");
+      setTimestamp(moment().unix().toString());
+    }
+  }, []);
+
   const createNewExercise = () => {
     setWorkoutCards([
       ...workoutCards,
