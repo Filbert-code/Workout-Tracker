@@ -1,4 +1,5 @@
 import {
+  Alert,
   Autocomplete,
   Box,
   Button,
@@ -27,6 +28,8 @@ import { timeStamp } from "console";
 import { LocalizationProvider } from "@mui/x-date-pickers";
 import { Moment } from "moment";
 import moment from "moment";
+import { hasTokenExpired, refreshTokens } from "../../libs/AuthHelper";
+import postWorkoutObjectValidationChecks from "../../libs/PostWorkoutObjectHelper";
 
 export interface PostWorkoutObject {
   username: string;
@@ -44,6 +47,7 @@ type PostWorkoutFormComponentProps = {
   workout: Workout;
   isUpdating: boolean;
   setTriggerFetchWorkouts: React.Dispatch<React.SetStateAction<boolean>>;
+  setTriggerRefreshTokenExpired: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 function PostWorkoutFormComponent(props: PostWorkoutFormComponentProps) {
@@ -56,6 +60,9 @@ function PostWorkoutFormComponent(props: PostWorkoutFormComponentProps) {
   const [notes, setNotes] = useState(workout.notes);
   const [timestamp, setTimestamp] = useState(workout.timestamp);
   const [cardCount, setCardCount] = useState(workout.exercises.length);
+  const [showValidationErrorMessage, setShowValidationErrorMessage] =
+    useState(false);
+  const [validationErrorMessage, setValidationErrorMessage] = useState("");
 
   useEffect(() => {
     if (timestamp.length == 0) {
@@ -105,6 +112,12 @@ function PostWorkoutFormComponent(props: PostWorkoutFormComponentProps) {
   }
 
   const updateWorkout = async () => {
+    if (hasTokenExpired()) {
+      const ableToRefreshTokens = await refreshTokens();
+      if (ableToRefreshTokens === "false") {
+        props.setTriggerRefreshTokenExpired(true);
+      }
+    }
     const workoutObj: PostWorkoutObject = {
       username: localStorage.getItem("username")!!,
       timestamp: timestamp,
@@ -122,6 +135,14 @@ function PostWorkoutFormComponent(props: PostWorkoutFormComponentProps) {
         .join(", "),
       notes: notes,
     };
+    const validationErrorMessage =
+      postWorkoutObjectValidationChecks(workoutObj);
+    if (validationErrorMessage.length !== 0) {
+      // an error message was returned from the validation checks, that's not good.
+      setShowValidationErrorMessage(true);
+      setValidationErrorMessage(validationErrorMessage);
+      return;
+    }
     const endpoint =
       "https://lgm3h1q06a.execute-api.us-west-2.amazonaws.com/dev";
     const route = "/workouts";
@@ -146,6 +167,12 @@ function PostWorkoutFormComponent(props: PostWorkoutFormComponentProps) {
   };
 
   const postWorkout = async () => {
+    if (hasTokenExpired()) {
+      const ableToRefreshTokens = await refreshTokens();
+      if (ableToRefreshTokens === "false") {
+        props.setTriggerRefreshTokenExpired(true);
+      }
+    }
     const workoutObj: PostWorkoutObject = {
       username: localStorage.getItem("username")!!,
       timestamp: timestamp,
@@ -163,6 +190,14 @@ function PostWorkoutFormComponent(props: PostWorkoutFormComponentProps) {
         .join(", "),
       notes: notes,
     };
+    const validationErrorMessage =
+      postWorkoutObjectValidationChecks(workoutObj);
+    if (validationErrorMessage.length !== 0) {
+      // an error message was returned from the validation checks, that's not good.
+      setShowValidationErrorMessage(true);
+      setValidationErrorMessage(validationErrorMessage);
+      return;
+    }
     const endpoint =
       "https://lgm3h1q06a.execute-api.us-west-2.amazonaws.com/dev";
     const route = "/workouts";
@@ -186,7 +221,7 @@ function PostWorkoutFormComponent(props: PostWorkoutFormComponentProps) {
   };
 
   const handleDateTimeChange = (newDateTime: Moment | null) => {
-    setTimestamp(newDateTime?.valueOf().toString()!!);
+    setTimestamp(newDateTime?.unix().toString()!!);
   };
 
   useEffect(() => {
@@ -198,6 +233,25 @@ function PostWorkoutFormComponent(props: PostWorkoutFormComponentProps) {
       open={true}
       children={
         <Box sx={{ margin: 5 }}>
+          <Box
+            sx={{
+              position: "sticky",
+              top: 8,
+              display: "flex",
+              justifyContent: "flex-end",
+            }}
+          >
+            {props.showPostWorkoutForm ? (
+              <IconButton
+                color="primary"
+                aria-label="close"
+                size="large"
+                onClick={() => props.setShowPostWorkoutForm(false)}
+              >
+                <CloseRounded />
+              </IconButton>
+            ) : null}
+          </Box>
           <Stack direction="column" spacing={2}>
             <LocalizationProvider dateAdapter={AdapterMoment}>
               <DateTimePicker
@@ -280,40 +334,23 @@ function PostWorkoutFormComponent(props: PostWorkoutFormComponentProps) {
               onChange={(event) => {
                 setNotes(event.target.value);
               }}
+              value={notes}
             />
             <Stack>
               <Button variant="contained" onClick={handleSubmitWorkout}>
                 {props.isUpdating ? "Update Workout" : "Post Workout"}
               </Button>
-              {/* <Snackbar
-                open={showNotAuthenticatedAlert}
-                onClose={() => setShowNotAuthenticatedAlert(false)}
-                anchorOrigin={{ horizontal: "center", vertical: "bottom" }}
-                autoHideDuration={5000}
-              >
-                <Alert severity="error" sx={{ width: "100%" }}>
-                  Something went wrong, please check your workout parameters.
-                </Alert>
-              </Snackbar> */}
             </Stack>
           </Stack>
-          {props.showPostWorkoutForm ? (
-            <IconButton
-              aria-label="close"
-              onClick={() => props.setShowPostWorkoutForm(false)}
-              sx={{
-                position: "absolute",
-                right: 8,
-                top: 8,
-                color: (theme) => theme.palette.grey[500],
-              }}
+          {showValidationErrorMessage && (
+            <Alert
+              variant="filled"
+              severity="error"
+              onClose={() => setShowValidationErrorMessage(false)}
             >
-              <CloseRounded />
-            </IconButton>
-          ) : null}
-          <Button onClick={() => setWorkoutCards([...workoutCards])}>
-            Click me
-          </Button>
+              {validationErrorMessage}
+            </Alert>
+          )}
         </Box>
       }
     />

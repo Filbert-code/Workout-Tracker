@@ -31,11 +31,13 @@ import { SetStateAction, useEffect, useState } from "react";
 import { EMPTY_WORKOUT } from "../../libs/Workout";
 import moment from "moment";
 import { CloseRounded } from "@mui/icons-material";
+import { hasTokenExpired, refreshTokens } from "../../libs/AuthHelper";
 
 type WorkoutScheduleCardComponentProps = {
   workoutCardData: WorkoutCardData;
   key: string;
   setTriggerFetchWorkouts: React.Dispatch<React.SetStateAction<boolean>>;
+  setTriggerRefreshTokenExpired: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 function WorkoutScheduleCardComponent(
@@ -48,6 +50,12 @@ function WorkoutScheduleCardComponent(
   const [showNote, setShowNote] = useState(false);
 
   const deleteWorkout = async () => {
+    if (hasTokenExpired()) {
+      const ableToRefreshTokens = await refreshTokens();
+      if (ableToRefreshTokens === "false") {
+        props.setTriggerRefreshTokenExpired(true);
+      }
+    }
     const workoutObj = {
       username: localStorage.getItem("username")!!,
       timestamp: workout?.timestamp,
@@ -90,16 +98,21 @@ function WorkoutScheduleCardComponent(
               )}`}</Typography>
             </Box>
             <Box>
-              <Typography
-                sx={{
-                  background: "#fff",
-                  border: 1,
-                  padding: 1,
-                }}
-                variant="h6"
-              >
-                {workout ? workout?.workoutType : "NONE"}
-              </Typography>
+              {workout && (
+                <Typography
+                  sx={{
+                    background: "#fff",
+                    border: 3,
+                    padding: 1,
+                    borderRadius: 1,
+                    borderColor: "#1976D2",
+                  }}
+                  variant="h6"
+                  color={"#1976D2"}
+                >
+                  {workout?.workoutType}
+                </Typography>
+              )}
             </Box>
           </Stack>
           <Box
@@ -238,6 +251,9 @@ function WorkoutScheduleCardComponent(
               showPostWorkoutForm={isUpdating}
               setShowPostWorkoutForm={setIsUpdating}
               setTriggerFetchWorkouts={props.setTriggerFetchWorkouts}
+              setTriggerRefreshTokenExpired={
+                props.setTriggerRefreshTokenExpired
+              }
             />
           )}
           {isPosting && (
@@ -259,6 +275,9 @@ function WorkoutScheduleCardComponent(
               showPostWorkoutForm={isPosting}
               setShowPostWorkoutForm={setIsPosting}
               setTriggerFetchWorkouts={props.setTriggerFetchWorkouts}
+              setTriggerRefreshTokenExpired={
+                props.setTriggerRefreshTokenExpired
+              }
             />
           )}
         </Box>

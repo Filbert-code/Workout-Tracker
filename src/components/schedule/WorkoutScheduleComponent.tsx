@@ -1,4 +1,10 @@
-import { WidthFull } from "@mui/icons-material";
+import {
+  ArrowBack,
+  ArrowForward,
+  ArrowLeft,
+  ArrowRight,
+  WidthFull,
+} from "@mui/icons-material";
 import {
   Box,
   Button,
@@ -20,6 +26,7 @@ import moment from "moment";
 import { Moment } from "moment";
 import { useEffect, useState } from "react";
 import { COLUMN_DEFINITIONS } from "../../constants";
+import { hasTokenExpired, refreshTokens } from "../../libs/AuthHelper";
 import {
   getDatesForTheWeek,
   getTimestampStartEnd,
@@ -36,6 +43,7 @@ type WorkoutScheduleComponentProps = {
   setShowWorkoutFormDialog: React.Dispatch<React.SetStateAction<boolean>>;
   triggerFetchWorkouts: boolean;
   setTriggerFetchWorkouts: React.Dispatch<React.SetStateAction<boolean>>;
+  setTriggerRefreshTokenExpired: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
 export interface WorkoutCardData {
@@ -51,14 +59,19 @@ function WorkoutScheduleComponent(props: WorkoutScheduleComponentProps) {
   const [relativeDate, setRelativeDate] = useState(moment());
 
   useEffect(() => {
-    console.log(
-      `Trigger Fetch Workouts changed: ${props.triggerFetchWorkouts}`
-    );
     handleFetchWorkouts();
     props.setTriggerFetchWorkouts(false);
   }, [props.triggerFetchWorkouts]);
 
   const handleFetchWorkouts = async () => {
+    console.log("Fetching workouts...");
+    if (hasTokenExpired()) {
+      console.log("Fetch request: Token expired.");
+      const ableToRefreshTokens = await refreshTokens();
+      if (ableToRefreshTokens === "false") {
+        props.setTriggerRefreshTokenExpired(true);
+      }
+    }
     const endpoint =
       "https://lgm3h1q06a.execute-api.us-west-2.amazonaws.com/dev";
     const route = "/workouts";
@@ -167,33 +180,42 @@ function WorkoutScheduleComponent(props: WorkoutScheduleComponentProps) {
   return (
     <Box>
       <Button onClick={handleFetchWorkouts}>Get Workouts</Button>
-      <Stack
-        direction="row"
-        justifyContent="center"
-        alignItems="center"
-        spacing={2}
-      >
-        <Button
-          variant="contained"
-          onClick={() => updateRelativeTimeAndUpdate("back")}
-        >
-          Back
-        </Button>
-        <Button
-          variant="contained"
-          onClick={() => updateRelativeTimeAndUpdate("next")}
-        >
-          Next
-        </Button>
-      </Stack>
 
       <Grid container columns={{ xs: 4, sm: 8, md: 12 }}>
+        <Grid xs={12} item>
+          <Stack
+            direction="row"
+            justifyContent="center"
+            alignItems="center"
+            spacing={2}
+          >
+            <Button
+              variant="contained"
+              size="large"
+              onClick={() => updateRelativeTimeAndUpdate("back")}
+              startIcon={<ArrowBack />}
+            >
+              Previous Week
+            </Button>
+            <Button
+              variant="contained"
+              size="large"
+              onClick={() => updateRelativeTimeAndUpdate("next")}
+              endIcon={<ArrowForward />}
+            >
+              Next Week
+            </Button>
+          </Stack>
+        </Grid>
         {workoutCardDataList.map((workoutCardData, index) => {
           return (
             <WorkoutScheduleCardComponent
               key={index.toString()}
               workoutCardData={workoutCardData}
               setTriggerFetchWorkouts={props.setTriggerFetchWorkouts}
+              setTriggerRefreshTokenExpired={
+                props.setTriggerRefreshTokenExpired
+              }
             />
           );
         })}

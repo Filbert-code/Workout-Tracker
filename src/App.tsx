@@ -3,7 +3,7 @@ import Button from "@mui/material/Button";
 import { Box, Container, Stack } from "@mui/material";
 import LoginDialogComponent from "./components/authentication/LoginDialogComponent";
 import { useEffect, useState } from "react";
-import { refreshTokens } from "./libs/AuthHelper";
+import { hasTokenExpired, refreshTokens } from "./libs/AuthHelper";
 import {
   convertToWorkout,
   EMPTY_WORKOUT,
@@ -25,17 +25,15 @@ function App() {
     new Date(parseInt(localStorage.getItem("refreshTokenExpireEpoch")!!))
   );
   const [triggerFetchWorkouts, setTriggerFetchWorkouts] = useState(false);
+  const [triggerRefreshTokenExpired, setTriggerRefreshTokenExpired] =
+    useState(false);
 
   useEffect(() => {
     const tokenExpireEpoch = parseInt(
       localStorage.getItem("tokenExpireEpoch")!!
     );
-    console.log(
-      `Time till tokens expire: ${new Date(
-        tokenExpireEpoch - Date.now()
-      ).getMinutes()}`
-    );
-    if (Date.now() > tokenExpireEpoch - 5 * 60 * 1000) {
+    if (hasTokenExpired()) {
+      console.log("refreshing...");
       const refreshCredentials = async () => {
         const refreshResult: string = await refreshTokens();
         if (refreshResult) {
@@ -52,24 +50,26 @@ function App() {
     } else {
       setShowLoginFormDialog(false);
     }
-  });
+    setTriggerRefreshTokenExpired(false);
+  }, [triggerRefreshTokenExpired]);
 
   return (
     <Box>
       <TopNavigationComponent />
       <Container>
         <Stack>
-          <Button>
+          {/* <Button>
             Refresh Token Expires at {refreshTokenExpirationDate.toTimeString()}
           </Button>
           <Button>
             ID/Access Tokens Expire at {tokensExpirationDate.toTimeString()}
-          </Button>
+          </Button> */}
           <Button onClick={() => setShowWorkoutFormDialog(true)}>
             Post Workout
           </Button>
         </Stack>
         <WorkoutScheduleComponent
+          setTriggerRefreshTokenExpired={setTriggerRefreshTokenExpired}
           triggerFetchWorkouts={triggerFetchWorkouts}
           setTriggerFetchWorkouts={setTriggerFetchWorkouts}
           showWorkoutFormDialog={showWorkoutFormDialog}
@@ -85,6 +85,7 @@ function App() {
         )}
         {showWorkoutFormDialog && (
           <PostWorkoutFormComponent
+            setTriggerRefreshTokenExpired={setTriggerRefreshTokenExpired}
             setTriggerFetchWorkouts={setTriggerFetchWorkouts}
             isUpdating={false}
             workout={EMPTY_WORKOUT}

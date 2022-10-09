@@ -37,3 +37,17 @@ export const refreshTokens = async () => {
     return "false";
   }
 };
+
+export const hasTokenExpired = () => {
+  const tokenExpireEpoch = parseInt(localStorage.getItem("tokenExpireEpoch")!!);
+  console.log(
+    `Time till tokens expire: ${new Date(
+      tokenExpireEpoch - Date.now()
+    ).getMinutes()}`
+  );
+  const refreshTimeOffset = 13;
+  if (Date.now() > tokenExpireEpoch - refreshTimeOffset * 60 * 1000) {
+    return true;
+  }
+  return false;
+};
