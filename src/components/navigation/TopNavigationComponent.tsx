@@ -9,13 +9,21 @@ import {
 } from "@mui/material";
 import { userPoolClient } from "../../libs/clients/UserPoolClient";
 
-function TopNavigationComponent() {
+type TopNavigationComponentProps = {
+  setTriggerRefreshTokenExpired: React.Dispatch<React.SetStateAction<boolean>>;
+};
+
+function TopNavigationComponent(props: TopNavigationComponentProps) {
   const signOutUser = async () => {
     const access_token = localStorage.getItem("accessToken")!!;
-    const response = await userPoolClient.send(
-      new GlobalSignOutCommand({ AccessToken: access_token })
-    );
-    await response.$metadata.httpStatusCode;
+    const response = await userPoolClient
+      .send(new GlobalSignOutCommand({ AccessToken: access_token }))
+      .then((res) => {
+        localStorage.clear();
+        props.setTriggerRefreshTokenExpired(true);
+        console.log("Signing out...");
+      })
+      .catch((res) => console.log("Sign out failed..."));
   };
 
   return (
@@ -33,7 +41,7 @@ function TopNavigationComponent() {
         <Container>
           {(localStorage.getItem("username") && (
             <Stack direction="row-reverse" spacing={2}>
-              <Button variant="contained" onClick={async () => signOutUser()}>
+              <Button variant="contained" onClick={signOutUser}>
                 Sign Out
               </Button>
               <Typography variant="h6" color="inherit" component="div">

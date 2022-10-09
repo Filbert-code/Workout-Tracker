@@ -1,5 +1,5 @@
 import { InitiateAuthCommand } from "@aws-sdk/client-cognito-identity-provider";
-import { Alert, Box, Snackbar, Stack } from "@mui/material";
+import { Alert, Box, Snackbar, Stack, Typography } from "@mui/material";
 import Button from "@mui/material/Button";
 import SimpleDialog from "@mui/material/Dialog";
 import TextField from "@mui/material/TextField";
@@ -8,6 +8,8 @@ import React, { useState } from "react";
 
 type LoginDialogComponentProps = {
   setShowLoginDialog: React.Dispatch<React.SetStateAction<boolean>>;
+  setShowSignupFormDialog: React.Dispatch<React.SetStateAction<boolean>>;
+  setShowForgotPasswordDialog: React.Dispatch<React.SetStateAction<boolean>>;
   setTokensExpirationDate: React.Dispatch<React.SetStateAction<Date>>;
   setRefreshTokenExpirationDate: React.Dispatch<React.SetStateAction<Date>>;
   setTriggerFetchWorkouts: React.Dispatch<React.SetStateAction<boolean>>;
@@ -71,6 +73,7 @@ function LoginDialogComponent(props: LoginDialogComponentProps) {
 
   return (
     <SimpleDialog
+      transitionDuration={0}
       open={true}
       children={
         <Box margin={5}>
@@ -85,11 +88,32 @@ function LoginDialogComponent(props: LoginDialogComponentProps) {
               onChange={(event) => setEnteredPassword(event.target.value)}
             />
             <Button
+              variant="outlined"
+              color="secondary"
+              onClick={() => props.setShowForgotPasswordDialog(true)}
+            >
+              <Typography variant="caption">Forgot your password?</Typography>
+            </Button>
+            <Button
               variant="contained"
               onClick={() => signInUser(enteredUsername, enteredPassword)}
             >
               Sign In
             </Button>
+            <Stack direction="row" spacing={2}>
+              <Typography variant="body2" sx={{ alignSelf: "center" }}>
+                New to Workout Tracker?
+              </Typography>
+              <Button
+                variant="contained"
+                color="secondary"
+                size="small"
+                onClick={() => props.setShowSignupFormDialog(true)}
+              >
+                Sign Up
+              </Button>
+            </Stack>
+
             <Snackbar
               open={showNotAuthenticatedAlert}
               onClose={() => setShowNotAuthenticatedAlert(false)}

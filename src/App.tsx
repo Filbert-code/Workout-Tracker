@@ -13,11 +13,17 @@ import {
 import TopNavigationComponent from "./components/navigation/TopNavigationComponent";
 import PostWorkoutFormComponent from "./components/workout-form/PostWorkoutFormComponent";
 import WorkoutScheduleComponent from "./components/schedule/WorkoutScheduleComponent";
+import SignupDialogComponent from "./components/authentication/SignupDialogComponent";
+import ForgotPasswordComponent from "./components/authentication/ForgotPasswordComponent";
 
 function App() {
-  // refreshTokens();
+  // localStorage.setItem("test", "This is a test.");
+
   const [showWorkoutFormDialog, setShowWorkoutFormDialog] = useState(false);
   const [showLoginFormDialog, setShowLoginFormDialog] = useState(false);
+  const [showSignupFormDialog, setShowSignupFormDialog] = useState(false);
+  const [showForgotPasswordDialog, setShowForgotPasswordDialog] =
+    useState(false);
   const [tokensExpirationDate, setTokensExpirationDate] = useState(
     new Date(parseInt(localStorage.getItem("tokenExpireEpoch")!!))
   );
@@ -27,6 +33,22 @@ function App() {
   const [triggerFetchWorkouts, setTriggerFetchWorkouts] = useState(false);
   const [triggerRefreshTokenExpired, setTriggerRefreshTokenExpired] =
     useState(false);
+
+  useEffect(() => {
+    if (showSignupFormDialog === true) {
+      setShowLoginFormDialog(false);
+    } else {
+      setShowLoginFormDialog(true);
+    }
+  }, [showSignupFormDialog]);
+
+  useEffect(() => {
+    if (showForgotPasswordDialog === true) {
+      setShowLoginFormDialog(false);
+    } else {
+      setShowLoginFormDialog(true);
+    }
+  }, [showForgotPasswordDialog]);
 
   useEffect(() => {
     const tokenExpireEpoch = parseInt(
@@ -55,7 +77,9 @@ function App() {
 
   return (
     <Box>
-      <TopNavigationComponent />
+      <TopNavigationComponent
+        setTriggerRefreshTokenExpired={setTriggerRefreshTokenExpired}
+      />
       <Container>
         <Stack>
           {/* <Button>
@@ -78,9 +102,21 @@ function App() {
         {showLoginFormDialog && (
           <LoginDialogComponent
             setShowLoginDialog={setShowLoginFormDialog}
+            setShowSignupFormDialog={setShowSignupFormDialog}
+            setShowForgotPasswordDialog={setShowForgotPasswordDialog}
             setTokensExpirationDate={setTokensExpirationDate}
             setRefreshTokenExpirationDate={setRefreshTokenExpirationDate}
             setTriggerFetchWorkouts={setTriggerFetchWorkouts}
+          />
+        )}
+        {showSignupFormDialog && (
+          <SignupDialogComponent
+            setShowSignupFormDialog={setShowSignupFormDialog}
+          />
+        )}
+        {showForgotPasswordDialog && (
+          <ForgotPasswordComponent
+            setShowForgotPasswordDialog={setShowForgotPasswordDialog}
           />
         )}
         {showWorkoutFormDialog && (

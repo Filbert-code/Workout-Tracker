@@ -1,4 +1,7 @@
-import { InitiateAuthCommand } from "@aws-sdk/client-cognito-identity-provider";
+import {
+  GlobalSignOutCommand,
+  InitiateAuthCommand,
+} from "@aws-sdk/client-cognito-identity-provider";
 import { userPoolClient } from "./clients/UserPoolClient";
 
 export const refreshTokens = async () => {
@@ -39,7 +42,14 @@ export const refreshTokens = async () => {
 };
 
 export const hasTokenExpired = () => {
-  const tokenExpireEpoch = parseInt(localStorage.getItem("tokenExpireEpoch")!!);
+  let tokenExpireEpoch = 0;
+  try {
+    tokenExpireEpoch = parseInt(localStorage.getItem("tokenExpireEpoch")!!);
+  } catch (error) {
+    return true;
+  }
+  console.log(`Token expire epoch: ${tokenExpireEpoch}`);
+
   console.log(
     `Time till tokens expire: ${new Date(
       tokenExpireEpoch - Date.now()

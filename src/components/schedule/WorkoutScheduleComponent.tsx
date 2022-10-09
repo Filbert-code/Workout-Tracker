@@ -58,10 +58,33 @@ function WorkoutScheduleComponent(props: WorkoutScheduleComponentProps) {
   >([]);
   const [relativeDate, setRelativeDate] = useState(moment());
 
+  const daysOfTheWeek = [
+    "Monday",
+    "Tuesday",
+    "Wednesday",
+    "Thursday",
+    "Friday",
+    "Saturday",
+    "Sunday",
+  ];
+
   useEffect(() => {
     handleFetchWorkouts();
     props.setTriggerFetchWorkouts(false);
   }, [props.triggerFetchWorkouts]);
+
+  useEffect(() => {
+    const dates = getDatesForTheWeek(relativeDate);
+    let cards: WorkoutCardData[] = [];
+    for (let i = 0; i < 7; i++) {
+      cards.push({
+        dayOfTheWeek: daysOfTheWeek[i],
+        date: dates[i],
+        workout: null,
+      });
+    }
+    setWorkoutCardDataList(cards);
+  }, []);
 
   const handleFetchWorkouts = async () => {
     console.log("Fetching workouts...");
@@ -94,15 +117,6 @@ function WorkoutScheduleComponent(props: WorkoutScheduleComponentProps) {
       const jsonObjects = await response.json();
 
       const workouts = convertToWorkout(jsonObjects);
-      const daysOfTheWeek = [
-        "Monday",
-        "Tuesday",
-        "Wednesday",
-        "Thursday",
-        "Friday",
-        "Saturday",
-        "Sunday",
-      ];
 
       const dates = getDatesForTheWeek(relativeDate);
 
