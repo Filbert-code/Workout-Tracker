@@ -230,6 +230,8 @@ function PostWorkoutFormComponent(props: PostWorkoutFormComponentProps) {
 
   return (
     <SimpleDialog
+      maxWidth="sm"
+      fullWidth={true}
       open={true}
       children={
         <Box sx={{ margin: 5 }}>

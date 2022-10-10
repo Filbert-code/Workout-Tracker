@@ -1,3 +1,7 @@
+import {
+  ConfirmSignUpCommand,
+  ForgotPasswordCommand,
+} from "@aws-sdk/client-cognito-identity-provider";
 import { ArrowBack } from "@mui/icons-material";
 import {
   Alert,
@@ -11,54 +15,77 @@ import {
 import Button from "@mui/material/Button";
 import SimpleDialog from "@mui/material/Dialog";
 import { useState } from "react";
+import { userPoolClient } from "../../libs/clients/UserPoolClient";
 
 type ForgotPasswordComponentProps = {
-  setShowForgotPasswordDialog: React.Dispatch<React.SetStateAction<boolean>>;
+  navigateToConfirmForgotPasswordPage: () => void;
 };
 
 function ForgotPasswordComponent(props: ForgotPasswordComponentProps) {
-  const [enteredEmailOrUsername, setEnteredEmailOrUsername] = useState("");
-  const [showNotAuthenticatedAlert, setShowNotAuthenticatedAlert] =
-    useState(false);
+  const [enteredUsername, setEnteredUsername] = useState("");
+  const [errorMessage, setErrorMessage] = useState("Reset Password Failed");
+  const [showResetUnsuccessful, setShowResetUnsuccessful] = useState(false);
+  const [showResetSuccessful, setShowResetSuccessful] = useState(false);
+
+  const resetUserPassword = async () => {
+    if (enteredUsername.length === 0) {
+      setErrorMessage("Please enter your username.");
+      setShowResetUnsuccessful(true);
+      return;
+    }
+    const response = await userPoolClient
+      .send(
+        new ForgotPasswordCommand({
+          ClientId: "1vdmuccspf3jne0ig707rd9foo",
+          Username: enteredUsername,
+        })
+      )
+      .then((res) => setShowResetSuccessful(true))
+      .catch((res) => {
+        setErrorMessage(res.message);
+        setShowResetUnsuccessful(true);
+      });
+  };
 
   return (
-    <SimpleDialog
-      transitionDuration={0}
-      open={true}
-      children={
-        <Box margin={5}>
-          <IconButton onClick={() => props.setShowForgotPasswordDialog(false)}>
-            <ArrowBack />
-          </IconButton>
-          <Stack direction="column" spacing={2}>
-            <TextField
-              label="Enter Your Email or Username"
-              onChange={(event) =>
-                setEnteredEmailOrUsername(event.target.value)
-              }
-            />
-            <Button
-              variant="contained"
-              // onClick={() => signUpUser(enteredUsername, enteredEmail, enteredPassword)}
-            >
-              Send
-            </Button>
+    <Box margin={5}>
+      <Stack direction="column" spacing={2}>
+        <Typography variant="h4">Reset Password</Typography>
+        <TextField
+          label="Enter Your Username"
+          onChange={(event) => setEnteredUsername(event.target.value)}
+        />
+        <Button variant="contained" onClick={resetUserPassword}>
+          Send
+        </Button>
 
-            <Snackbar
-              open={showNotAuthenticatedAlert}
-              onClose={() => setShowNotAuthenticatedAlert(false)}
-              anchorOrigin={{ horizontal: "center", vertical: "bottom" }}
-              autoHideDuration={5000}
-            >
-              <Alert severity="error" sx={{ width: "100%" }}>
-                A message was sent to your email with the reset-password
-                confirmation code.
-              </Alert>
-            </Snackbar>
-          </Stack>
-        </Box>
-      }
-    />
+        <Snackbar
+          open={showResetUnsuccessful}
+          onClose={() => setShowResetUnsuccessful(false)}
+          anchorOrigin={{ horizontal: "center", vertical: "bottom" }}
+          autoHideDuration={5000}
+        >
+          <Alert severity="error" sx={{ width: "100%" }}>
+            {errorMessage}
+          </Alert>
+        </Snackbar>
+        <Snackbar
+          open={showResetSuccessful}
+          onClose={() => {
+            setShowResetSuccessful(false);
+            localStorage.setItem("username", enteredUsername);
+            props.navigateToConfirmForgotPasswordPage();
+          }}
+          anchorOrigin={{ horizontal: "center", vertical: "bottom" }}
+          autoHideDuration={2000}
+        >
+          <Alert severity="success" sx={{ width: "100%" }}>
+            A message was sent to your email with the reset-password
+            confirmation code.
+          </Alert>
+        </Snackbar>
+      </Stack>
+    </Box>
   );
 }
 

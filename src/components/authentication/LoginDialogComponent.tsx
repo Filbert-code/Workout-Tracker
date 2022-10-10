@@ -4,15 +4,13 @@ import Button from "@mui/material/Button";
 import SimpleDialog from "@mui/material/Dialog";
 import TextField from "@mui/material/TextField";
 import { userPoolClient } from "../../libs/clients/UserPoolClient";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 
 type LoginDialogComponentProps = {
-  setShowLoginDialog: React.Dispatch<React.SetStateAction<boolean>>;
-  setShowSignupFormDialog: React.Dispatch<React.SetStateAction<boolean>>;
-  setShowForgotPasswordDialog: React.Dispatch<React.SetStateAction<boolean>>;
-  setTokensExpirationDate: React.Dispatch<React.SetStateAction<Date>>;
-  setRefreshTokenExpirationDate: React.Dispatch<React.SetStateAction<Date>>;
+  setShowAuthentication: React.Dispatch<React.SetStateAction<boolean>>;
   setTriggerFetchWorkouts: React.Dispatch<React.SetStateAction<boolean>>;
+  navigateToSignupPage: () => void;
+  navigateToForgotPasswordPage: () => void;
 };
 
 function LoginDialogComponent(props: LoginDialogComponentProps) {
@@ -33,7 +31,7 @@ function LoginDialogComponent(props: LoginDialogComponentProps) {
           },
         })
       );
-      props.setShowLoginDialog(false);
+      props.setShowAuthentication(false);
 
       // update credentials in local storage
       localStorage.setItem(
@@ -58,12 +56,6 @@ function LoginDialogComponent(props: LoginDialogComponentProps) {
       );
       localStorage.setItem("username", username);
 
-      props.setTokensExpirationDate(
-        new Date(Date.now() + response.AuthenticationResult?.ExpiresIn!! * 1000)
-      );
-      props.setRefreshTokenExpirationDate(
-        new Date(Date.now() + 60 * 60 * 1000)
-      );
       props.setTriggerFetchWorkouts(true);
     } catch (error) {
       // show error alert
@@ -72,62 +64,56 @@ function LoginDialogComponent(props: LoginDialogComponentProps) {
   };
 
   return (
-    <SimpleDialog
-      transitionDuration={0}
-      open={true}
-      children={
-        <Box margin={5}>
-          <Stack direction="column" spacing={2}>
-            <TextField
-              label="Username"
-              onChange={(event) => setEnteredUsername(event.target.value)}
-            />
-            <TextField
-              label="Password"
-              type="password"
-              onChange={(event) => setEnteredPassword(event.target.value)}
-            />
-            <Button
-              variant="outlined"
-              color="secondary"
-              onClick={() => props.setShowForgotPasswordDialog(true)}
-            >
-              <Typography variant="caption">Forgot your password?</Typography>
-            </Button>
-            <Button
-              variant="contained"
-              onClick={() => signInUser(enteredUsername, enteredPassword)}
-            >
-              Sign In
-            </Button>
-            <Stack direction="row" spacing={2}>
-              <Typography variant="body2" sx={{ alignSelf: "center" }}>
-                New to Workout Tracker?
-              </Typography>
-              <Button
-                variant="contained"
-                color="secondary"
-                size="small"
-                onClick={() => props.setShowSignupFormDialog(true)}
-              >
-                Sign Up
-              </Button>
-            </Stack>
+    <Box margin={5}>
+      <Stack direction="column" spacing={2}>
+        <TextField
+          label="Username"
+          onChange={(event) => setEnteredUsername(event.target.value)}
+        />
+        <TextField
+          label="Password"
+          type="password"
+          onChange={(event) => setEnteredPassword(event.target.value)}
+        />
+        <Button
+          variant="outlined"
+          color="secondary"
+          onClick={props.navigateToForgotPasswordPage}
+        >
+          <Typography variant="caption">Forgot your password?</Typography>
+        </Button>
+        <Button
+          variant="contained"
+          onClick={() => signInUser(enteredUsername, enteredPassword)}
+        >
+          Sign In
+        </Button>
+        <Stack direction="row" spacing={2}>
+          <Typography variant="body2" sx={{ alignSelf: "center" }}>
+            New to Workout Tracker?
+          </Typography>
+          <Button
+            variant="contained"
+            color="secondary"
+            size="small"
+            onClick={props.navigateToSignupPage}
+          >
+            Sign Up
+          </Button>
+        </Stack>
 
-            <Snackbar
-              open={showNotAuthenticatedAlert}
-              onClose={() => setShowNotAuthenticatedAlert(false)}
-              anchorOrigin={{ horizontal: "center", vertical: "bottom" }}
-              autoHideDuration={5000}
-            >
-              <Alert severity="error" sx={{ width: "100%" }}>
-                Username or Password was incorrect.
-              </Alert>
-            </Snackbar>
-          </Stack>
-        </Box>
-      }
-    />
+        <Snackbar
+          open={showNotAuthenticatedAlert}
+          onClose={() => setShowNotAuthenticatedAlert(false)}
+          anchorOrigin={{ horizontal: "center", vertical: "bottom" }}
+          autoHideDuration={5000}
+        >
+          <Alert severity="error" sx={{ width: "100%" }}>
+            Username or Password was incorrect.
+          </Alert>
+        </Snackbar>
+      </Stack>
+    </Box>
   );
 }
 

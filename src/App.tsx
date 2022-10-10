@@ -1,8 +1,8 @@
 import "./App.css";
 import Button from "@mui/material/Button";
-import { Box, Container, Stack } from "@mui/material";
+import { Box, Container, Stack, Typography } from "@mui/material";
 import LoginDialogComponent from "./components/authentication/LoginDialogComponent";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { hasTokenExpired, refreshTokens } from "./libs/AuthHelper";
 import {
   convertToWorkout,
@@ -15,11 +15,15 @@ import PostWorkoutFormComponent from "./components/workout-form/PostWorkoutFormC
 import WorkoutScheduleComponent from "./components/schedule/WorkoutScheduleComponent";
 import SignupDialogComponent from "./components/authentication/SignupDialogComponent";
 import ForgotPasswordComponent from "./components/authentication/ForgotPasswordComponent";
+import { FitnessCenter } from "@mui/icons-material";
+import { useFrame } from "@react-three/fiber";
+import AuthenticationComponent from "./components/authentication/AuthenticationComponent";
 
 function App() {
   // localStorage.setItem("test", "This is a test.");
 
   const [showWorkoutFormDialog, setShowWorkoutFormDialog] = useState(false);
+  const [showAuthentication, setShowAuthentication] = useState(false);
   const [showLoginFormDialog, setShowLoginFormDialog] = useState(false);
   const [showSignupFormDialog, setShowSignupFormDialog] = useState(false);
   const [showForgotPasswordDialog, setShowForgotPasswordDialog] =
@@ -34,21 +38,21 @@ function App() {
   const [triggerRefreshTokenExpired, setTriggerRefreshTokenExpired] =
     useState(false);
 
-  useEffect(() => {
-    if (showSignupFormDialog === true) {
-      setShowLoginFormDialog(false);
-    } else {
-      setShowLoginFormDialog(true);
-    }
-  }, [showSignupFormDialog]);
+  // useEffect(() => {
+  //   if (showSignupFormDialog === true) {
+  //     setShowLoginFormDialog(false);
+  //   } else {
+  //     setShowLoginFormDialog(true);
+  //   }
+  // }, [showSignupFormDialog]);
 
-  useEffect(() => {
-    if (showForgotPasswordDialog === true) {
-      setShowLoginFormDialog(false);
-    } else {
-      setShowLoginFormDialog(true);
-    }
-  }, [showForgotPasswordDialog]);
+  // useEffect(() => {
+  //   if (showForgotPasswordDialog === true) {
+  //     setShowLoginFormDialog(false);
+  //   } else {
+  //     setShowLoginFormDialog(true);
+  //   }
+  // }, [showForgotPasswordDialog]);
 
   useEffect(() => {
     const tokenExpireEpoch = parseInt(
@@ -60,17 +64,17 @@ function App() {
         const refreshResult: string = await refreshTokens();
         if (refreshResult) {
           setTokensExpirationDate(new Date(parseInt(refreshResult)));
-          setShowLoginFormDialog(false);
+          setShowAuthentication(false);
           console.log("Credentials refreshed.");
         } else {
-          setShowLoginFormDialog(true);
+          setShowAuthentication(true);
         }
       };
       refreshCredentials().catch(console.error);
     } else if (!tokenExpireEpoch) {
-      setShowLoginFormDialog(true);
+      setShowAuthentication(true);
     } else {
-      setShowLoginFormDialog(false);
+      setShowAuthentication(false);
     }
     setTriggerRefreshTokenExpired(false);
   }, [triggerRefreshTokenExpired]);
@@ -81,16 +85,25 @@ function App() {
         setTriggerRefreshTokenExpired={setTriggerRefreshTokenExpired}
       />
       <Container>
-        <Stack>
+        <Stack paddingY={3}>
           {/* <Button>
             Refresh Token Expires at {refreshTokenExpirationDate.toTimeString()}
           </Button>
           <Button>
             ID/Access Tokens Expire at {tokensExpirationDate.toTimeString()}
           </Button> */}
-          <Button onClick={() => setShowWorkoutFormDialog(true)}>
-            Post Workout
-          </Button>
+          <Box display="flex" justifyContent="center">
+            <Button
+              color="primary"
+              variant="contained"
+              onClick={() => setShowWorkoutFormDialog(true)}
+              startIcon={<FitnessCenter />}
+              endIcon={<FitnessCenter />}
+              size="large"
+            >
+              <Typography variant="h4">Post Workout</Typography>
+            </Button>
+          </Box>
         </Stack>
         <WorkoutScheduleComponent
           setTriggerRefreshTokenExpired={setTriggerRefreshTokenExpired}
@@ -99,26 +112,21 @@ function App() {
           showWorkoutFormDialog={showWorkoutFormDialog}
           setShowWorkoutFormDialog={setShowWorkoutFormDialog}
         />
-        {showLoginFormDialog && (
+        {/* {showLoginFormDialog && (
           <LoginDialogComponent
             setShowLoginDialog={setShowLoginFormDialog}
             setShowSignupFormDialog={setShowSignupFormDialog}
             setShowForgotPasswordDialog={setShowForgotPasswordDialog}
-            setTokensExpirationDate={setTokensExpirationDate}
-            setRefreshTokenExpirationDate={setRefreshTokenExpirationDate}
             setTriggerFetchWorkouts={setTriggerFetchWorkouts}
           />
-        )}
-        {showSignupFormDialog && (
-          <SignupDialogComponent
-            setShowSignupFormDialog={setShowSignupFormDialog}
+        )} */}
+        {showAuthentication && (
+          <AuthenticationComponent
+            setTriggerFetchWorkouts={setTriggerFetchWorkouts}
+            setShowAuthentication={setShowAuthentication}
           />
         )}
-        {showForgotPasswordDialog && (
-          <ForgotPasswordComponent
-            setShowForgotPasswordDialog={setShowForgotPasswordDialog}
-          />
-        )}
+
         {showWorkoutFormDialog && (
           <PostWorkoutFormComponent
             setTriggerRefreshTokenExpired={setTriggerRefreshTokenExpired}

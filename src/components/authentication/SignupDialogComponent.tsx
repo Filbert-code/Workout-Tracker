@@ -15,11 +15,11 @@ import {
   Typography,
 } from "@mui/material";
 import SimpleDialog from "@mui/material/Dialog";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { userPoolClient } from "../../libs/clients/UserPoolClient";
 
 type SignupDialogComponentProps = {
-  setShowSignupFormDialog: React.Dispatch<React.SetStateAction<boolean>>;
+  navigateToConfirmSignupPage: () => void;
 };
 
 function SignupDialogComponent(props: SignupDialogComponentProps) {
@@ -55,71 +55,61 @@ function SignupDialogComponent(props: SignupDialogComponentProps) {
         })
       )
       .then((res) => {
-        console.log("Sign up Successful!");
         setShowSignupSuccessful(true);
       })
       .catch((res) => {
-        console.log("Sign up Unsuccessful!");
         setErrorMessage(res.message);
         setShowSignupUnsuccessful(true);
       });
   };
 
   return (
-    <SimpleDialog
-      transitionDuration={0}
-      open={true}
-      children={
-        <Box margin={5}>
-          <IconButton onClick={() => props.setShowSignupFormDialog(false)}>
-            <ArrowBack />
-          </IconButton>
-          <Stack direction="column" spacing={2}>
-            <TextField
-              label="Choose a Username"
-              onChange={(event) => setEnteredUsername(event.target.value)}
-            />
-            <TextField
-              label="Enter a Valid Email"
-              type="email"
-              onChange={(event) => setEnteredEmail(event.target.value)}
-            />
-            <TextField
-              label="Choose a Password"
-              type="password"
-              onChange={(event) => setEnteredPassword(event.target.value)}
-            />
-            <Button variant="contained" onClick={signUpUser}>
-              Sign Up
-            </Button>
+    <Box margin={5}>
+      <Stack direction="column" spacing={2}>
+        <TextField
+          label="Choose a Username"
+          onChange={(event) => setEnteredUsername(event.target.value)}
+        />
+        <TextField
+          label="Enter a Valid Email"
+          type="email"
+          onChange={(event) => setEnteredEmail(event.target.value)}
+        />
+        <TextField
+          label="Choose a Password"
+          type="password"
+          onChange={(event) => setEnteredPassword(event.target.value)}
+        />
+        <Button variant="contained" onClick={signUpUser}>
+          Sign Up
+        </Button>
 
-            <Snackbar
-              open={showSignupUnsuccessful}
-              onClose={() => setShowSignupUnsuccessful(false)}
-              anchorOrigin={{ horizontal: "center", vertical: "bottom" }}
-              autoHideDuration={5000}
-            >
-              <Alert severity="error" sx={{ width: "100%" }}>
-                {errorMessage}
-              </Alert>
-            </Snackbar>
-            <Snackbar
-              open={showSignupSuccessful}
-              onClose={() => {
-                setShowSignupSuccessful(false);
-                props.setShowSignupFormDialog(false);
-              }}
-              anchorOrigin={{ horizontal: "center", vertical: "bottom" }}
-              autoHideDuration={5000}
-            >
-              <Alert severity="success" sx={{ width: "100%" }}>
-                Sign Up Successful! Please Verify Your Email.
-              </Alert>
-            </Snackbar>
-          </Stack>
-        </Box>
-      }
-    />
+        <Snackbar
+          open={showSignupUnsuccessful}
+          onClose={() => setShowSignupUnsuccessful(false)}
+          anchorOrigin={{ horizontal: "center", vertical: "bottom" }}
+          autoHideDuration={5000}
+        >
+          <Alert severity="error" sx={{ width: "100%" }}>
+            {errorMessage}
+          </Alert>
+        </Snackbar>
+        <Snackbar
+          open={showSignupSuccessful}
+          onClose={() => {
+            setShowSignupSuccessful(false);
+            props.navigateToConfirmSignupPage();
+            localStorage.setItem("username", enteredUsername);
+          }}
+          anchorOrigin={{ horizontal: "center", vertical: "bottom" }}
+          autoHideDuration={2000}
+        >
+          <Alert severity="success" sx={{ width: "100%" }}>
+            Sign Up Successful! Please Verify Your Email.
+          </Alert>
+        </Snackbar>
+      </Stack>
+    </Box>
   );
 }
 

@@ -13,6 +13,7 @@ import {
   CardHeader,
   Container,
   Divider,
+  Fab,
   Grid,
   List,
   ListItem,
@@ -193,34 +194,10 @@ function WorkoutScheduleComponent(props: WorkoutScheduleComponentProps) {
 
   return (
     <Box>
-      <Button onClick={handleFetchWorkouts}>Get Workouts</Button>
-
       <Grid container columns={{ xs: 4, sm: 8, md: 12 }}>
-        <Grid xs={12} item>
-          <Stack
-            direction="row"
-            justifyContent="center"
-            alignItems="center"
-            spacing={2}
-          >
-            <Button
-              variant="contained"
-              size="large"
-              onClick={() => updateRelativeTimeAndUpdate("back")}
-              startIcon={<ArrowBack />}
-            >
-              Previous Week
-            </Button>
-            <Button
-              variant="contained"
-              size="large"
-              onClick={() => updateRelativeTimeAndUpdate("next")}
-              endIcon={<ArrowForward />}
-            >
-              Next Week
-            </Button>
-          </Stack>
-        </Grid>
+        {/* <Grid xs={12} item>
+          
+        </Grid> */}
         {workoutCardDataList.map((workoutCardData, index) => {
           return (
             <WorkoutScheduleCardComponent
@@ -234,6 +211,38 @@ function WorkoutScheduleComponent(props: WorkoutScheduleComponentProps) {
           );
         })}
       </Grid>
+      <Stack
+        direction="row"
+        spacing={1}
+        sx={{
+          position: "sticky",
+          bottom: 8,
+          display: "flex",
+          justifyContent: "center",
+          zIndex: "1200",
+        }}
+      >
+        <Button
+          variant="contained"
+          size="large"
+          color="secondary"
+          onClick={() => updateRelativeTimeAndUpdate("back")}
+          startIcon={<ArrowBack />}
+          sx={{ borderRadius: 4 }}
+        >
+          <Typography variant="body1">Prev Week</Typography>
+        </Button>
+        <Button
+          variant="contained"
+          size="large"
+          color="secondary"
+          onClick={() => updateRelativeTimeAndUpdate("next")}
+          endIcon={<ArrowForward />}
+          sx={{ borderRadius: 4 }}
+        >
+          <Typography variant="body1">Next Week</Typography>
+        </Button>
+      </Stack>
     </Box>
   );
 }
