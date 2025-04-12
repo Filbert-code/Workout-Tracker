@@ -18,6 +18,8 @@ import ForgotPasswordComponent from "./components/authentication/ForgotPasswordC
 import { FitnessCenter } from "@mui/icons-material";
 import { useFrame } from "@react-three/fiber";
 import AuthenticationComponent from "./components/authentication/AuthenticationComponent";
+import { ThemeProvider, createTheme } from '@mui/material/styles';
+import CssBaseline from '@mui/material/CssBaseline';
 
 function App() {
   // localStorage.setItem("test", "This is a test.");
@@ -37,6 +39,24 @@ function App() {
   const [triggerFetchWorkouts, setTriggerFetchWorkouts] = useState(false);
   const [triggerRefreshTokenExpired, setTriggerRefreshTokenExpired] =
     useState(false);
+
+  const darkTheme = createTheme({
+    palette: {
+      mode: 'dark',
+      primary: {
+        light: '',
+        main: '#00224D',
+        dark: '',
+        contrastText: '#fff',
+      },
+      secondary: {
+        light: '',
+        main: '#FF204E',
+        dark: '',
+        contrastText: '#000',
+      },
+    },
+  });
 
   // useEffect(() => {
   //   if (showSignupFormDialog === true) {
@@ -80,65 +100,68 @@ function App() {
   }, [triggerRefreshTokenExpired]);
 
   return (
-    <Box>
-      <TopNavigationComponent
-        setTriggerRefreshTokenExpired={setTriggerRefreshTokenExpired}
-      />
-      <Container>
-        <Stack paddingY={3}>
-          {/* <Button>
-            Refresh Token Expires at {refreshTokenExpirationDate.toTimeString()}
-          </Button>
-          <Button>
-            ID/Access Tokens Expire at {tokensExpirationDate.toTimeString()}
-          </Button> */}
-          <Box display="flex" justifyContent="center">
-            <Button
-              color="primary"
-              variant="contained"
-              onClick={() => setShowWorkoutFormDialog(true)}
-              startIcon={<FitnessCenter />}
-              endIcon={<FitnessCenter />}
-              size="large"
-            >
-              <Typography variant="h4">Post Workout</Typography>
-            </Button>
-          </Box>
-        </Stack>
-        <WorkoutScheduleComponent
+    <ThemeProvider theme={darkTheme}>
+      <CssBaseline />
+      <Box>
+        <TopNavigationComponent
           setTriggerRefreshTokenExpired={setTriggerRefreshTokenExpired}
-          triggerFetchWorkouts={triggerFetchWorkouts}
-          setTriggerFetchWorkouts={setTriggerFetchWorkouts}
-          showWorkoutFormDialog={showWorkoutFormDialog}
-          setShowWorkoutFormDialog={setShowWorkoutFormDialog}
         />
-        {/* {showLoginFormDialog && (
-          <LoginDialogComponent
-            setShowLoginDialog={setShowLoginFormDialog}
-            setShowSignupFormDialog={setShowSignupFormDialog}
-            setShowForgotPasswordDialog={setShowForgotPasswordDialog}
-            setTriggerFetchWorkouts={setTriggerFetchWorkouts}
-          />
-        )} */}
-        {showAuthentication && (
-          <AuthenticationComponent
-            setTriggerFetchWorkouts={setTriggerFetchWorkouts}
-            setShowAuthentication={setShowAuthentication}
-          />
-        )}
-
-        {showWorkoutFormDialog && (
-          <PostWorkoutFormComponent
+        <Container>
+          <Stack paddingY={3}>
+            {/* <Button>
+              Refresh Token Expires at {refreshTokenExpirationDate.toTimeString()}
+            </Button>
+            <Button>
+              ID/Access Tokens Expire at {tokensExpirationDate.toTimeString()}
+            </Button> */}
+            <Box display="flex" justifyContent="center">
+              <Button
+                color="primary"
+                variant="contained"
+                onClick={() => setShowWorkoutFormDialog(true)}
+                startIcon={<FitnessCenter />}
+                endIcon={<FitnessCenter />}
+                size="large"
+              >
+                <Typography variant="h4">Post Workout</Typography>
+              </Button>
+            </Box>
+          </Stack>
+          <WorkoutScheduleComponent
             setTriggerRefreshTokenExpired={setTriggerRefreshTokenExpired}
+            triggerFetchWorkouts={triggerFetchWorkouts}
             setTriggerFetchWorkouts={setTriggerFetchWorkouts}
-            isUpdating={false}
-            workout={EMPTY_WORKOUT}
-            showPostWorkoutForm={showWorkoutFormDialog}
-            setShowPostWorkoutForm={setShowWorkoutFormDialog}
+            showWorkoutFormDialog={showWorkoutFormDialog}
+            setShowWorkoutFormDialog={setShowWorkoutFormDialog}
           />
-        )}
-      </Container>
-    </Box>
+          {/* {showLoginFormDialog && (
+            <LoginDialogComponent
+              setShowLoginDialog={setShowLoginFormDialog}
+              setShowSignupFormDialog={setShowSignupFormDialog}
+              setShowForgotPasswordDialog={setShowForgotPasswordDialog}
+              setTriggerFetchWorkouts={setTriggerFetchWorkouts}
+            />
+          )} */}
+          {showAuthentication && (
+            <AuthenticationComponent
+              setTriggerFetchWorkouts={setTriggerFetchWorkouts}
+              setShowAuthentication={setShowAuthentication}
+            />
+          )}
+
+          {showWorkoutFormDialog && (
+            <PostWorkoutFormComponent
+              setTriggerRefreshTokenExpired={setTriggerRefreshTokenExpired}
+              setTriggerFetchWorkouts={setTriggerFetchWorkouts}
+              isUpdating={false}
+              workout={EMPTY_WORKOUT}
+              showPostWorkoutForm={showWorkoutFormDialog}
+              setShowPostWorkoutForm={setShowWorkoutFormDialog}
+            />
+          )}
+        </Container>
+      </Box>
+    </ThemeProvider>
   );
 }
 

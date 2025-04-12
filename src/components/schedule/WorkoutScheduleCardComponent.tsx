@@ -83,15 +83,18 @@ function WorkoutScheduleCardComponent(
     }
   };
 
+  const now = moment();
+  const isToday = now.isSame(date, 'day');
+
   return (
     <Grid xs={4} item>
-      <Card sx={{ overflow: "visible", marginY: 1, marginX: 1 }}>
+      <Card sx={{ overflow: "visible", marginY: 1, marginX: 1, border: isToday ? 2 : 0, borderRadius: 1, borderColor: "secondary.main"}}>
         <CardContent>
           <Stack
             direction="row"
-            sx={{ background: "#fff", justifyContent: "space-between" }}
+            sx={{ justifyContent: "space-between" }}
           >
-            <Box sx={{ background: "#fff" }}>
+            <Box>
               <Typography variant="h4">{dayOfTheWeek}</Typography>
               <Typography variant="h6">{`${date.format(
                 "MMMM, Do"
@@ -101,14 +104,13 @@ function WorkoutScheduleCardComponent(
               {workout && (
                 <Typography
                   sx={{
-                    background: "#fff",
                     border: 3,
                     padding: 1,
                     borderRadius: 1,
-                    borderColor: "#1976D2",
+                    borderColor: "secondary",
                   }}
                   variant="h6"
-                  color={"#1976D2"}
+                  color={"secondary"}
                 >
                   {workout?.workoutType}
                 </Typography>
@@ -172,7 +174,7 @@ function WorkoutScheduleCardComponent(
                 columns={COLUMN_DEFINITIONS}
               />
             ) : (
-              <Box sx={{ background: "#fff" }}>
+              <Box>
                 {date.dayOfYear() < moment().dayOfYear() ? (
                   <Typography variant="h6">
                     Post a workout from the past!
@@ -190,7 +192,7 @@ function WorkoutScheduleCardComponent(
           <Box
             sx={{
               display: "flex",
-              background: "#fff",
+              //background: "#fff",
               justifyContent: "space-evenly",
               paddingBottom: 1,
             }}
@@ -229,7 +231,7 @@ function WorkoutScheduleCardComponent(
           <Box
             sx={{
               display: "flex",
-              background: "#fff",
+              //background: "#fff",
               justifyContent: "space-evenly",
               paddingBottom: 1,
             }}
