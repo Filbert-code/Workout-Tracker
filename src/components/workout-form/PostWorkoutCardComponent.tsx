@@ -15,6 +15,7 @@ import {
 import { WorkoutCardState } from "../../libs/Workout";
 import Grid2 from "@mui/material/Unstable_Grid2";
 import { useEffect, useState } from "react";
+import { EXERCISES } from "../../exercisesNames";
 
 type PostWorkoutCardComponentProps = {
   id: number;
@@ -45,12 +46,7 @@ function PostWorkoutCardComponent(props: PostWorkoutCardComponentProps) {
             <Autocomplete
               disablePortal
               id="exercise-input"
-              options={[
-                "Dumbell Presses",
-                "Lateral Raises",
-                "Squats",
-                "Deadlift",
-              ]}
+              options={EXERCISES}
               onChange={(event: React.SyntheticEvent, value: string | null) =>
                 props.setWorkoutCards(
                   props.workoutCards.map((ele) => {
