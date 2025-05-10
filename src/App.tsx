@@ -23,7 +23,6 @@ import CssBaseline from '@mui/material/CssBaseline';
 
 function App() {
   // localStorage.setItem("test", "This is a test.");
-
   const [showWorkoutFormDialog, setShowWorkoutFormDialog] = useState(false);
   const [showAuthentication, setShowAuthentication] = useState(false);
   const [showLoginFormDialog, setShowLoginFormDialog] = useState(false);
