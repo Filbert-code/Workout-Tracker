@@ -32,6 +32,7 @@ import { EMPTY_WORKOUT } from "../../libs/Workout";
 import moment from "moment";
 import { CloseRounded } from "@mui/icons-material";
 import { hasTokenExpired, refreshTokens } from "../../libs/AuthHelper";
+import { useRef } from 'react';
 
 type WorkoutScheduleCardComponentProps = {
   workoutCardData: WorkoutCardData;
@@ -48,6 +49,20 @@ function WorkoutScheduleCardComponent(
   const [isDeleting, setIsDeleting] = useState(false);
   const [isPosting, setIsPosting] = useState(false);
   const [showNote, setShowNote] = useState(false);
+  const myRef = useRef<any>(null);
+
+  const executeScroll = () => myRef.current.scrollIntoView({ behavior: 'smooth', block: "center" });
+
+  const now = moment();
+  const isToday = now.isSame(date, 'day');
+
+  useEffect(() => {
+    console.log(date);
+    console.log(dayOfTheWeek);
+    if (isToday) {
+      executeScroll();
+    }
+  }, []);
 
   const deleteWorkout = async () => {
     if (hasTokenExpired()) {
@@ -83,11 +98,8 @@ function WorkoutScheduleCardComponent(
     }
   };
 
-  const now = moment();
-  const isToday = now.isSame(date, 'day');
-
   return (
-    <Grid xs={4} item>
+    <Grid ref={myRef} xs={4} item>
       <Card sx={{ overflow: "visible", marginY: 1, marginX: 1, border: isToday ? 2 : 0, borderRadius: 1, borderColor: "secondary.main"}}>
         <CardContent>
           <Stack

@@ -195,9 +195,6 @@ function WorkoutScheduleComponent(props: WorkoutScheduleComponentProps) {
   return (
     <Box>
       <Grid container columns={{ xs: 4, sm: 8, md: 12 }}>
-        {/* <Grid xs={12} item>
-          
-        </Grid> */}
         {workoutCardDataList.map((workoutCardData, index) => {
           return (
             <WorkoutScheduleCardComponent
